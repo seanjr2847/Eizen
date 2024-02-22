@@ -31,4 +31,32 @@
       newTask.innerHTML = `<span>${taskName}</span><button class="done-button" onclick="removeTask(this)">완료</button>`;
       document.querySelector('.undecided-area').appendChild(newTask);
     }
+  })
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('#tabs li');
+    const tabContents = document.querySelectorAll('.tab-content');
+  
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function (e) {
+        e.preventDefault();
+  
+        const targetId = this.getAttribute('data-target');
+        const targetContent = document.getElementById(targetId);
+  
+        tabContents.forEach(tc => {
+          tc.classList.add('hidden');
+        });
+  
+        tabs.forEach(t => {
+          t.children[0].classList.remove('text-blue-600', 'border-blue-600');
+          t.children[0].classList.add('text-gray-500', 'border-transparent');
+        });
+  
+        this.children[0].classList.add('text-blue-600', 'border-blue-600');
+        this.children[0].classList.remove('text-gray-500', 'border-transparent');
+  
+        targetContent.classList.remove('hidden');
+      });
+    });
   });
