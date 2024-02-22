@@ -4,7 +4,8 @@ import os
 from flask_session import Session
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'your_fallback_secret_key')
+app.secret_key = os.urandom(24)
+
 
 # Flask-Session 설정
 app.config["SESSION_TYPE"] = "filesystem"
