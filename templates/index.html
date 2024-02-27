@@ -1,66 +1,276 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3E2GFSK9XC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-3E2GFSK9XC');
-</script>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eisen</title>
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<style>
-
-</style>
+    <title>Eisenhower Matrix Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.0/css/dataTables.bootstrap5.css">
+    <style>
+        /* Placeholder for Dark Mode styles */
+        .dark-mode {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+        .dark-mode .nav-tabs .nav-link {
+            color: #ffffff;
+        }
+        .dark-mode .nav-tabs .nav-link.active {
+            background-color: #495057;
+            color: #ffffff;
+        }
+        .task {
+            cursor: grab;
+        }
+        .task:active {
+            cursor: grabbing;
+        }
+        .bg-info {
+            background-color: #d1ecf1!important; /* Light blue background for highlighting */
+        }
+    </style>
 </head>
-<body class="bg-white">
-    <header>
-        <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-bold text-gray-800">EISENHOWER MATRIX</h1>
-          <ul class="tabs flex">
-            <li class="-mb-px mr-1">
-              <a class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold" href="#" data-tab-target="tab1">탭 1</a>
-            </li>
-            <li class="mr-1">
-              <a class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold" href="#" data-tab-target="tab2">탭 2</a>
-            </li>
-          </ul>
-        </div>
-        <button href="/login">구글 로그인</button>
-      </header>
-<div class="container mx-auto py-4 shadow">
-<!-- 탭 컨텐츠 부분 -->
-    <div id="tab1" class="tab-content active">
-        <div class="matrix-grid">
-            <div class="matrix-quadrant" data-quadrant="do-first" ondragover="allowDrop(event)" ondrop="drop(event)">
-                <h2 class="font-bold text-gray-800">긴급하고 중요함</h2>
+<body>
+    <nav class="container-fluid bg-light py-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <h1 class="text-primary mb-0">Eisen</h1>
+                <ul class="nav nav-tabs mb-0 ms-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#matrix" data-bs-toggle="tab">매트릭스</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#done" data-bs-toggle="tab">완료 작업 목록</a>
+                    </li>
+                </ul>
             </div>
-            <div class="matrix-quadrant" data-quadrant="schedule" ondragover="allowDrop(event)" ondrop="drop(event)">
-                <h2 class="font-bold text-gray-800">안급하고 중요함</h2>
-            </div>
-            <div class="matrix-quadrant" data-quadrant="delegate" ondragover="allowDrop(event)" ondrop="drop(event)">
-                <h2 class="font-bold text-gray-800">급하고 안중요함</h2>
-            </div>
-            <div class="matrix-quadrant" data-quadrant="dont-do" ondragover="allowDrop(event)" ondrop="drop(event)">
-                <h2 class="font-bold text-gray-800">안급하고 안중요함</h2>
+            <div class="d-flex align-items-center">
+                <div class="form-check form-switch me-3">
+                    <input class="form-check-input" type="checkbox" id="darkModeSwitch">
+                    <label class="form-check-label" for="darkModeSwitch">Dark Mode</label>
+                </div>
+                <button class="btn btn-light border" id="googleLoginBtn">
+                    <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo"> 구글로그인
+                </button>
             </div>
         </div>
-        <div class="undecided-area" data-quadrant="undecided" ondragover="allowDrop(event)" ondrop="drop(event)">
-            <h2 class="font-bold text-gray-800">우선순위 미배정</h2>
-        </div>
-            <button id="create-task" class="mt-4 px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 focus:outline-none">create new task</button>
-    </div>
-</div>
-    <div id="tab2" class="tab-content hidden">
-        <!-- 탭 2의 컨텐츠를 여기에 넣습니다 -->
-    </div>
-</div>
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </nav>
+    
+    
+
+    <main class="tab-content">
+        <section class="tab-pane fade show active" id="matrix">
+            <div class="container mt-4">
+                <div class="row g-4">
+                    <!-- Urgent & Important -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-danger text-white">Urgent & Important</div>
+                            <div class="card-body" id="urgent-important">
+                                <!-- Tasks will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Not Urgent but Important -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-warning text-dark">Not Urgent but Important</div>
+                            <div class="card-body" id="noturgent-important">
+                                <!-- Tasks will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Urgent but Not Important -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">Urgent but Not Important</div>
+                            <div class="card-body" id="urgent-notimportant">
+                                <!-- Tasks will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Neither Urgent nor Important -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-secondary text-white">Neither Urgent nor Important</div>
+                            <div class="card-body" id="noturgent-notimportant">
+                                <!-- Tasks will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+            
+        <section class="tab-pane fade" id="done">
+            <div class="table-responsive">
+                <table class="table" id="completedTasksTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">작업명</th>
+                            <th scope="col">완료일</th>
+                            <th scope="col">분류</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Completed tasks will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            let draggedElement = null;
+
+            $('.table').DataTable();
+            $('#completedTasksTable').DataTable();
+            function initializeTaskZones() {
+                // Attach double-click event listeners to each zone for adding tasks
+                $('#urgent-important, #noturgent-important, #urgent-notimportant, #noturgent-notimportant').dblclick(function() {
+                    addTaskToZone(this.id);
+                });
+        
+                // Enhance each zone to be a drop zone
+                const zones = ['#urgent-important', '#noturgent-important', '#urgent-notimportant', '#noturgent-notimportant'];
+                $(zones.join(', ')).on({
+                    'dragover': handleDragOver,
+                    'dragenter': handleDragEnter,
+                    'dragleave': handleDragLeave,
+                    'drop': handleDrop
+                });
+            }
+        
+            function addTaskToZone(zoneId) {
+                const taskName = prompt('Enter the task name:');
+                if (taskName) {
+                    const taskElement = createTaskElement(taskName);
+                    $('#' + zoneId).append(taskElement);
+                }
+            }
+        
+            function createTaskElement(taskName) {
+                const taskElement = $('<div>', {
+                    'class': 'task d-flex justify-content-between align-items-center p-2 bg-light border rounded mt-2',
+                    'draggable': true
+                }).on('dragstart', handleDragStart);
+            
+                // Add the task name text to the task element
+                taskElement.append($('<span>', { 'text': taskName }));
+                // Append the "Done" button to the task element
+                taskElement.append(createDoneButton());
+                return taskElement;
+            }
+            
+            
+        
+            function createTaskNameElement(taskName) {
+                const taskText = $('<span>', {
+                    'text': taskName,
+                    'class': 'task-text' // Optional: for additional styling if needed
+                });
+            
+                // Add double-click event to edit the task name, with event propagation prevention
+                taskText.dblclick(function(event) {
+                    event.stopPropagation(); // Prevent the event from bubbling up to the parent elements
+                    const newTaskName = prompt('Edit the task name:', $(this).text());
+                    if (newTaskName !== null && newTaskName.trim() !== '') {
+                        $(this).text(newTaskName);
+                    }
+                });
+            
+                return taskText;
+            }
+            
+            function createDoneButton() {
+                return $('<button>', {
+                    'class': 'btn btn-success btn-sm',
+                    'text': 'Done'
+                }).click(function() {
+                    var taskElement = $(this).closest('.task');
+            
+                    // Adjusted retrieval of taskName
+                    var taskName = taskElement.find('.task-text').text() || taskElement.text().trim(); // Fallback to direct text
+            
+                    // Use current date as completion date
+                    var completionDate = new Date().toISOString().slice(0, 10);
+            
+                    // Adjusted retrieval of originalMatrixArea
+                    var originalMatrixArea = taskElement.data('matrix-area') || taskElement.closest('[data-matrix-area]').data('matrix-area'); // Direct or ancestor
+            
+                    console.log("Task Details:", taskName, completionDate, originalMatrixArea);
+            
+                    // Call addCompletedTask with the captured details
+                    addCompletedTask(taskName, completionDate, originalMatrixArea);
+            
+                    // Fade out and remove the task element
+                    taskElement.fadeOut(300, function() { 
+                        $(this).remove();
+                    });
+                });
+            }
+            
+            
+            
+            
+        
+            function toggleDarkMode() {
+                $('#darkModeSwitch').change(function() {
+                    $('body').toggleClass('dark-mode');
+                });
+            }
+        
+            function handleDragStart(event) {
+                draggedElement = event.target;
+                event.originalEvent.dataTransfer.effectAllowed = 'move';
+                event.originalEvent.dataTransfer.setData('text/plain', $(this).text());
+            }
+        
+            function handleDragOver(event) {
+                event.preventDefault();
+                event.originalEvent.dataTransfer.dropEffect = 'move';
+            }
+        
+            function handleDragEnter(event) {
+                $(this).addClass('bg-info');
+            }
+        
+            function handleDragLeave(event) {
+                $(this).removeClass('bg-info');
+            }
+        
+            function handleDrop(event) {
+                event.preventDefault();
+                $(this).removeClass('bg-info');
+                if (draggedElement && this !== draggedElement) {
+                    $(this).append(draggedElement);
+                }
+            }
+            
+            // Function to add a completed task to the table
+            function addCompletedTask(taskName, completionDate, originalMatrixArea) {
+                console.log(taskName, completionDate, originalMatrixArea)
+                const newRow = $('<tr>').append(
+                    $('<td>').text(taskName),
+                    $('<td>').text(completionDate),
+                    $('<td>').text(originalMatrixArea),
+                );
+
+                $('#completedTasksTable').append(newRow);
+            }
+
+            // Initialize all functionality
+            initializeTaskZones();
+            toggleDarkMode();
+        });
+        
+    </script>
 </body>
 </html>
