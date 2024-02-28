@@ -218,8 +218,9 @@
             }
             
             
-            
-            
+            $('#googleLoginBtn').click(function() {
+                window.location.href = '/login'; // Flask 라우트로 리디렉션
+            });
         
             function toggleDarkMode() {
                 $('#darkModeSwitch').change(function() {

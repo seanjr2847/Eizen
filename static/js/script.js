@@ -60,3 +60,11 @@
       });
     });
   });
+
+
+          // JavaScript for Dark Mode Toggle
+          document.getElementById('darkModeSwitch').addEventListener('change', function() {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // Placeholder for JavaScript implementations like drag and drop
